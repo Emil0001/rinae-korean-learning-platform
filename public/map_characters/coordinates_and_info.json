@@ -1,0 +1,199 @@
+{
+  "title": "Korean 16 Country 3D Clay Characters & Map Coordinates",
+  "description": "Use these percentage coordinates (x%, y%) to position 3D clay characters on the downloaded clean 3D Korean world map.",
+  "characters_format": "Transparent PNG 3D Clay Figurines",
+  "countries": [
+    {
+      "code": "KR",
+      "hangul": "한국",
+      "russian": "Корея",
+      "nationality": "한국 사람",
+      "nationalityRussian": "кореец",
+      "position": {
+        "x_percent": 74,
+        "y_percent": 41
+      },
+      "clay_filename": "KR_한국_Корея_3D_Clay.png"
+    },
+    {
+      "code": "RU",
+      "hangul": "러시아",
+      "russian": "Россия",
+      "nationality": "러시아 사람",
+      "nationalityRussian": "россиянин",
+      "position": {
+        "x_percent": 55,
+        "y_percent": 20
+      },
+      "clay_filename": "RU_러시아_Россия_3D_Clay.png"
+    },
+    {
+      "code": "US",
+      "hangul": "미국",
+      "russian": "США",
+      "nationality": "미국 사람",
+      "nationalityRussian": "американец",
+      "position": {
+        "x_percent": 12,
+        "y_percent": 30
+      },
+      "clay_filename": "US_미국_США_3D_Clay.png"
+    },
+    {
+      "code": "GB",
+      "hangul": "영국",
+      "russian": "Великобритания",
+      "nationality": "영국 사람",
+      "nationalityRussian": "британец",
+      "position": {
+        "x_percent": 19,
+        "y_percent": 21
+      },
+      "clay_filename": "GB_영국_Великобритания_3D_Clay.png"
+    },
+    {
+      "code": "FR",
+      "hangul": "프랑스",
+      "russian": "Франция",
+      "nationality": "프랑스 사람",
+      "nationalityRussian": "француз",
+      "position": {
+        "x_percent": 23,
+        "y_percent": 33
+      },
+      "clay_filename": "FR_프랑스_Франция_3D_Clay.png"
+    },
+    {
+      "code": "DE",
+      "hangul": "독일",
+      "russian": "Германия",
+      "nationality": "독일 사람",
+      "nationalityRussian": "немец",
+      "position": {
+        "x_percent": 30,
+        "y_percent": 27
+      },
+      "clay_filename": "DE_독일_Германия_3D_Clay.png"
+    },
+    {
+      "code": "GR",
+      "hangul": "그리스",
+      "russian": "Греция",
+      "nationality": "그리스 사람",
+      "nationalityRussian": "грек",
+      "position": {
+        "x_percent": 28,
+        "y_percent": 45
+      },
+      "clay_filename": "GR_그리스_Греция_3D_Clay.png"
+    },
+    {
+      "code": "KZ",
+      "hangul": "카자흐스탄",
+      "russian": "Казахстан",
+      "nationality": "카자흐스탄 사람",
+      "nationalityRussian": "казахстанец",
+      "position": {
+        "x_percent": 41,
+        "y_percent": 29
+      },
+      "clay_filename": "KZ_카자흐스탄_Казахстан_3D_Clay.png"
+    },
+    {
+      "code": "UZ",
+      "hangul": "우즈베키스탄",
+      "russian": "Узбекистан",
+      "nationality": "우즈베키스탄 사람",
+      "nationalityRussian": "узбекистанец",
+      "position": {
+        "x_percent": 39,
+        "y_percent": 43
+      },
+      "clay_filename": "UZ_우즈베키스탄_Узбекистан_3D_Clay.png"
+    },
+    {
+      "code": "MN",
+      "hangul": "몽골",
+      "russian": "Монголия",
+      "nationality": "몽골 사람",
+      "nationalityRussian": "монгол",
+      "position": {
+        "x_percent": 58,
+        "y_percent": 33
+      },
+      "clay_filename": "MN_몽골_Монголия_3D_Clay.png"
+    },
+    {
+      "code": "CN",
+      "hangul": "중국",
+      "russian": "Китай",
+      "nationality": "중국 사람",
+      "nationalityRussian": "китаец",
+      "position": {
+        "x_percent": 52,
+        "y_percent": 53
+      },
+      "clay_filename": "CN_중국_Китай_3D_Clay.png"
+    },
+    {
+      "code": "JP",
+      "hangul": "일본",
+      "russian": "Япония",
+      "nationality": "일본 사람",
+      "nationalityRussian": "японец",
+      "position": {
+        "x_percent": 84,
+        "y_percent": 43
+      },
+      "clay_filename": "JP_일본_Япония_3D_Clay.png"
+    },
+    {
+      "code": "TH",
+      "hangul": "태국",
+      "russian": "Таиланд",
+      "nationality": "태국 사람",
+      "nationalityRussian": "таец",
+      "position": {
+        "x_percent": 50,
+        "y_percent": 69
+      },
+      "clay_filename": "TH_태국_Таиланд_3D_Clay.png"
+    },
+    {
+      "code": "VN",
+      "hangul": "베트남",
+      "russian": "Вьетнам",
+      "nationality": "베트남 사람",
+      "nationalityRussian": "вьетнамец",
+      "position": {
+        "x_percent": 60,
+        "y_percent": 67
+      },
+      "clay_filename": "VN_베트남_Вьетнам_3D_Clay.png"
+    },
+    {
+      "code": "MY",
+      "hangul": "말레이시아",
+      "russian": "Малайзия",
+      "nationality": "말레이시아 사람",
+      "nationalityRussian": "малазиец",
+      "position": {
+        "x_percent": 54,
+        "y_percent": 86
+      },
+      "clay_filename": "MY_말레이시아_Малайзия_3D_Clay.png"
+    },
+    {
+      "code": "AU",
+      "hangul": "호주",
+      "russian": "Австралия",
+      "nationality": "호주 사람",
+      "nationalityRussian": "австралиец",
+      "position": {
+        "x_percent": 77,
+        "y_percent": 82
+      },
+      "clay_filename": "AU_호주_Австралия_3D_Clay.png"
+    }
+  ]
+}

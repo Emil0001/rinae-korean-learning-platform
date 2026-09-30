@@ -1,0 +1,4 @@
+CREATE TYPE "CourseLessonKind" AS ENUM ('LESSON', 'MINI_QUIZ', 'FINAL_TEST');
+
+ALTER TABLE "CourseLesson"
+ADD COLUMN "kind" "CourseLessonKind" NOT NULL DEFAULT 'LESSON';

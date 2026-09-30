@@ -1,0 +1,458 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum UserRole {
+  STUDENT
+  ADMIN
+}
+
+enum TopikLevel {
+  TOPIK_I
+  TOPIK_II
+}
+
+enum TopikSectionType {
+  LISTENING
+  READING
+}
+
+enum TopikSectionBlockVariant {
+  EXAMPLE
+  PASSAGE
+  NOTICE
+}
+
+enum VocabularyLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum VocabularyReviewRating {
+  EASY
+  HARD
+  DONT_KNOW
+}
+
+enum VocabularyPlacementDirection {
+  KR_TO_RU
+  RU_TO_KR
+}
+
+enum VocabularyPlacementBand {
+  STARTER
+  STARTER_PLUS
+  EARLY_INTERMEDIATE
+}
+
+enum CourseLessonMode {
+  STANDARD
+  FLEXIBLE
+}
+
+enum CourseLessonKind {
+  LESSON
+  MINI_QUIZ
+  FINAL_TEST
+}
+
+enum CourseStepType {
+  GRAMMAR
+  EXAMPLES
+  VOCABULARY
+  PRACTICE
+  QUIZ
+  CUSTOM
+}
+
+model User {
+  id                          String                       @id @default(cuid())
+  name                        String
+  email                       String                       @unique
+  passwordHash                String
+  role                        UserRole                     @default(STUDENT)
+  courseAccessEnabled         Boolean                      @default(false)
+  coursePlacementLevelNumber  Int?
+  coursePlacementLevelSlug    String?
+  coursePlacementCompletedAt  DateTime?
+  createdAt                   DateTime                     @default(now())
+  updatedAt                   DateTime                     @updatedAt
+  sessions                    Session[]
+  passwordResetTokens         PasswordResetToken[]
+  attempts                    TopikAttempt[]
+  vocabularyProfile           VocabularyProfile?
+  vocabularyReviews           VocabularyReview[]
+  vocabularyPlacementSessions VocabularyPlacementSession[]
+  vocabularyPlacementAnswers  VocabularyPlacementAnswer[]
+  vocabularySprintAttempts    VocabularySprintAttempt[]
+  courseLessonProgress        CourseLessonProgress[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model VocabularyWord {
+  id               String                     @id @default(cuid())
+  korean           String
+  transcription    String?
+  translation      String
+  exampleKorean    String?
+  exampleRussian   String?
+  category         String?
+  level            VocabularyLevel            @default(BEGINNER)
+  isActive         Boolean                    @default(true)
+  createdAt        DateTime                   @default(now())
+  updatedAt        DateTime                   @updatedAt
+  reviews          VocabularyReview[]
+  placementAnswers VocabularyPlacementAnswer[]
+  courseLessonLinks CourseLessonVocabularyWord[]
+
+  @@index([level, isActive])
+}
+
+model VocabularyProfile {
+  id                   String          @id @default(cuid())
+  userId               String          @unique
+  estimatedLevel       VocabularyLevel?
+  placementScore       Int?
+  placementCompletedAt DateTime?
+  onboardingCompletedAt DateTime?
+  dailyGoal            Int             @default(15)
+  streakDays           Int             @default(0)
+  lastStudiedOn        DateTime?
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+  user                 User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VocabularyReview {
+  id             String                 @id @default(cuid())
+  userId         String
+  wordId         String
+  reviewCount    Int                    @default(0)
+  knownCount     Int                    @default(0)
+  dontKnowCount  Int                    @default(0)
+  currentStreak  Int                    @default(0)
+  intervalDays   Int                    @default(0)
+  nextReviewAt   DateTime               @default(now())
+  lastReviewedAt DateTime?
+  lastRating     VocabularyReviewRating?
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+  user           User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  word           VocabularyWord         @relation(fields: [wordId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, wordId])
+  @@index([userId, nextReviewAt])
+  @@index([wordId])
+}
+
+model VocabularyPlacementSession {
+  id             String                     @id @default(cuid())
+  userId         String
+  placementBand  VocabularyPlacementBand?
+  detectedLevel  VocabularyLevel?
+  score          Int?
+  correctAnswers Int?
+  totalQuestions Int
+  questionsJson  String
+  startedAt      DateTime                   @default(now())
+  completedAt    DateTime?
+  createdAt      DateTime                   @default(now())
+  updatedAt      DateTime                   @updatedAt
+  user           User                       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  answers        VocabularyPlacementAnswer[]
+
+  @@index([userId, completedAt])
+}
+
+model VocabularyPlacementAnswer {
+  id             String                       @id @default(cuid())
+  sessionId      String
+  userId         String
+  wordId         String
+  questionOrder  Int
+  direction      VocabularyPlacementDirection
+  selectedAnswer String
+  correctAnswer  String
+  isCorrect      Boolean
+  responseTimeMs Int?
+  answeredAt     DateTime                     @default(now())
+  createdAt      DateTime                     @default(now())
+  updatedAt      DateTime                     @updatedAt
+  session        VocabularyPlacementSession   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user           User                         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  word           VocabularyWord               @relation(fields: [wordId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId, questionOrder])
+  @@index([userId, answeredAt])
+  @@index([wordId])
+}
+
+model VocabularySprintAttempt {
+  id           String   @id @default(cuid())
+  userId       String
+  wordsCount   Int
+  correctPairs Int
+  mistakeCount Int
+  durationMs   Int
+  accuracy     Int
+  grade        String
+  xpEarned     Int
+  completedAt  DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, completedAt])
+}
+
+model CourseLevel {
+  id          String       @id @default(cuid())
+  number      Int          @unique
+  slug        String       @unique
+  title       String
+  description String?
+  accentColor String       @default("#5a6cff")
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  units       CourseUnit[]
+}
+
+model CourseUnit {
+  id          String         @id @default(cuid())
+  levelId     String
+  slug        String
+  order       Int
+  title       String
+  description String?
+  imageUrl    String?
+  isPublished Boolean        @default(true)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  level       CourseLevel    @relation(fields: [levelId], references: [id], onDelete: Cascade)
+  lessons     CourseLesson[]
+
+  @@unique([levelId, slug])
+  @@unique([levelId, order])
+  @@index([levelId, isPublished])
+}
+
+model CourseLesson {
+  id               String               @id @default(cuid())
+  unitId           String
+  slug             String
+  order            Int
+  title            String
+  summary          String?
+  imageUrl         String?
+  estimatedMinutes Int                  @default(12)
+  mode             CourseLessonMode     @default(STANDARD)
+  kind             CourseLessonKind     @default(LESSON)
+  isPublished      Boolean              @default(true)
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+  unit             CourseUnit           @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  steps            CourseLessonStep[]
+  progress         CourseLessonProgress[]
+  vocabularyLinks  CourseLessonVocabularyWord[]
+
+  @@unique([unitId, slug])
+  @@unique([unitId, order])
+  @@index([unitId, isPublished])
+}
+
+model CourseLessonVocabularyWord {
+  id        String         @id @default(cuid())
+  lessonId  String
+  wordId    String
+  order     Int            @default(1)
+  createdAt DateTime       @default(now())
+  lesson    CourseLesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  word      VocabularyWord @relation(fields: [wordId], references: [id], onDelete: Cascade)
+
+  @@unique([lessonId, wordId])
+  @@unique([lessonId, order])
+  @@index([wordId])
+}
+
+model CourseLessonStep {
+  id        String         @id @default(cuid())
+  lessonId  String
+  order     Int
+  type      CourseStepType
+  title     String
+  content   String
+  imageUrl  String?
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  lesson    CourseLesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([lessonId, order])
+  @@index([lessonId])
+}
+
+model CourseLessonProgress {
+  id                  String       @id @default(cuid())
+  userId              String
+  lessonId            String
+  currentStepOrder    Int          @default(1)
+  completedStepOrders Int[]        @default([])
+  lastOpenedAt        DateTime     @default(now())
+  completedAt         DateTime?
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  user                User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson              CourseLesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+  @@index([userId, lastOpenedAt])
+  @@index([lessonId])
+}
+
+model TopikTest {
+  id                String        @id @default(cuid())
+  title             String
+  description       String?
+  listeningAudioUrl String?
+  level             TopikLevel
+  durationMinutes   Int
+  isPublished       Boolean       @default(false)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  sections          TopikSection[]
+  attempts          TopikAttempt[]
+}
+
+model TopikSection {
+  id              String           @id @default(cuid())
+  testId          String
+  type            TopikSectionType
+  title           String
+  order           Int
+  durationMinutes Int
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  test            TopikTest        @relation(fields: [testId], references: [id], onDelete: Cascade)
+  blocks          TopikSectionBlock[]
+  questions       TopikQuestion[]
+
+  @@unique([testId, order])
+  @@index([testId, type])
+}
+
+model TopikSectionBlock {
+  id                         String                   @id @default(cuid())
+  sectionId                  String
+  order                      Int
+  displayBeforeQuestionOrder Int
+  variant                    TopikSectionBlockVariant @default(PASSAGE)
+  title                      String?
+  content                    String
+  createdAt                  DateTime                 @default(now())
+  updatedAt                  DateTime                 @updatedAt
+  section                    TopikSection             @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  @@unique([sectionId, order])
+  @@index([sectionId, displayBeforeQuestionOrder])
+}
+
+model TopikQuestion {
+  id              String               @id @default(cuid())
+  sectionId       String
+  order           Int
+  prompt          String
+  content         String?
+  contentImageUrl String?
+  explanation     String?
+  points          Int                  @default(1)
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  section         TopikSection         @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  choices         TopikChoice[]
+  attemptAnswers  TopikAttemptAnswer[]
+
+  @@unique([sectionId, order])
+  @@index([sectionId])
+}
+
+model TopikChoice {
+  id             String               @id @default(cuid())
+  questionId     String
+  order          Int
+  text           String
+  imageUrl       String?
+  isCorrect      Boolean              @default(false)
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  question       TopikQuestion        @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  attemptAnswers TopikAttemptAnswer[]
+
+  @@unique([questionId, order])
+  @@index([questionId])
+}
+
+model TopikAttempt {
+  id                String               @id @default(cuid())
+  userId            String
+  testId            String
+  startedAt         DateTime             @default(now())
+  finishedAt        DateTime?
+  totalScore        Int                  @default(0)
+  maxTotalScore     Int                  @default(0)
+  readingScore      Int                  @default(0)
+  maxReadingScore   Int                  @default(0)
+  listeningScore    Int                  @default(0)
+  maxListeningScore Int                  @default(0)
+  feedback          String?
+  user              User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  test              TopikTest            @relation(fields: [testId], references: [id], onDelete: Cascade)
+  answers           TopikAttemptAnswer[]
+
+  @@index([userId, testId])
+  @@index([testId])
+}
+
+model TopikAttemptAnswer {
+  id         String        @id @default(cuid())
+  attemptId  String
+  questionId String
+  choiceId   String?
+  isCorrect  Boolean       @default(false)
+  createdAt  DateTime      @default(now())
+  attempt    TopikAttempt  @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question   TopikQuestion @relation(fields: [questionId], references: [id], onDelete: Restrict)
+  choice     TopikChoice?  @relation(fields: [choiceId], references: [id], onDelete: SetNull)
+
+  @@unique([attemptId, questionId])
+  @@index([questionId])
+}
